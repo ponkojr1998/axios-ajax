@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Product Code</th>
+                <th>Unit Price</th>
+                <th>Qty</th>
+                <th>Total Price</th>
+                <th>Delete</th>
+                <th>Update</th>
+            </tr>
+        </thead>
+        <tbody id="productList"></tbody>
+    </table>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
+    <script>
+        getProducts();
+
+        async function getProducts(){
+            let url = "https://crud.teamrabbil.com/api/v1/ReadProduct";
+            let products = await axios.get(url);
+            if(products.status == 200){
+                let productsArr = products.data.data
+                productsArr.forEach(element => {
+                   document.getElementById('productList').innerHTML += `
+                        <tr>
+                            <td>${element.ProductName}</td>
+                            <td>${element.ProductCode}</td>
+                            <td>${element.UnitPrice}</td>
+                            <td>${element.Qty}</td>
+                            <td>${element.TotalPrice}</td>
+                            <td>
+                                <button onclick="deleteProduct('${element._id}')">Delete</button>    
+                            </td>
+                            <td>
+                                <button onclick="editProduct('${element._id}')">Edit</button>    
+                            </td>
+                        </tr>
+                   `;
+                });
+            }else{
+                //console.log(products)
+                console.log('Somethis is wrong!!')
+            }
+        }
+
+        async function deleteProduct(id){
+            let url = `https://crud.teamrabbil.com/api/v1/DeleteProduct/${id}`;
+            let response = await axios.get(url);
+            if(response.status == 200){
+                document.getElementById('productList').innerHTML = '';
+                getProducts();
+            }else{
+                console.log('Somethis is wrong!!')
+            }
+        }
+
+        async function createProduct(){
+            let ProductName= "Thanks! Now can be remove all.";
+            let ProductCode= 'Test';
+            let ProductImg= 'Test';
+            let UnitPrice= 'Test';
+            let ProductQty= 'Test';
+            let ProductTotal= 'Test';
+            let url = `https://crud.teamrabbil.com/api/v1/CreateProduct/`
+
+            let response = await axios.post(url,
+                {
+                    Img:ProductImg,
+                    ProductCode:ProductCode,
+                    ProductName:ProductName,
+                    Qty:ProductQty,
+                    TotalPrice:ProductTotal,
+                    UnitPrice:UnitPrice
+                }
+            );
+            if(response.status == 200){
+                document.getElementById('productList').innerHTML = '';
+                getProducts();
+            }else{
+                console.log('Somethis is wrong!!')
+            }
+        }
+    </script>
+</body>
+</html>
